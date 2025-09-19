@@ -1,4 +1,8 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
+import 'package:movies__series_app/core/model/ratings.dart';
 
 import 'endpoints.dart';
 import '../model/actor.dart';
@@ -17,7 +21,7 @@ Future<Page<Medium>> getMediaPage({
       if (filterData != null) ...filterData.toQueryParams(),
     },
   );
-
+  
   if (response.statusCode == 200) {
     final jsonResponse = (response.data as Map<String, dynamic>);
     return Page<Medium>.fromJson(
@@ -41,11 +45,11 @@ Future<List<Actor>> getMediumCast(int id) async {
   }
 }
 
-Future<Map<String, dynamic>> getMediumRatings(int id) async {
+Future<Ratings> getMediumRatings(int id) async {
   final response = await Dio().get(Endpoints.ratings(id: id));
 
   if (response.statusCode == 200) {
-    return response.data;
+    return Ratings.fromJson(response.data);
   } else {
     throw Exception('Failed to load movie ratings');
   }

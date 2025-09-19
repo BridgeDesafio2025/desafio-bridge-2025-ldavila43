@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:movies__series_app/core/model/ratings.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../core/app_export.dart';
@@ -17,7 +20,7 @@ class UserRatingsWidget extends StatefulWidget {
 }
 
 class _UserRatingsWidgetState extends State<UserRatingsWidget> {
-  Map<String, dynamic>? _userRatings;
+  Ratings? _userRatings;
   bool _isLoading = true;
 
   @override
@@ -32,7 +35,7 @@ class _UserRatingsWidgetState extends State<UserRatingsWidget> {
     });
   }
 
-  Future<Map<String, dynamic>?> _loadRatings() async {
+  Future<Ratings?> _loadRatings() async {
     try {
       return await getMediumRatings(widget.mediumId);
     } catch (e) {
@@ -51,9 +54,6 @@ class _UserRatingsWidgetState extends State<UserRatingsWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final hasError = !_isLoading && (_userRatings == null);
-    if (hasError) return const SizedBox.shrink();
-
     if (_isLoading)
       return Container(
         width: double.infinity,
@@ -67,9 +67,18 @@ class _UserRatingsWidgetState extends State<UserRatingsWidget> {
         ),
       );
 
-    final double averageRating = (_userRatings!['averageRating'] as num?)?.toDouble() ?? 8.5;
-    final int totalReviews = _userRatings!['totalReviews'] ?? 1250;
-    final List<Map<String, dynamic>> ratingBreakdown = (_userRatings!['breakdown'] as List?)?.cast<Map<String, dynamic>>() ?? [];
+    final ratings = _userRatings;
+
+    if (ratings == null) {
+      return const SizedBox.shrink();
+    }
+
+    final double averageRating = ratings.averageRating;
+    final int totalReviews = ratings.totalReviews;
+    final List<RatingBreakdown> ratingBreakdown = ratings.breakdown;
+
+    final int fullStars = averageRating.floor();
+    final bool hasHalfStar = (averageRating - fullStars) >= 0.5;
 
     return Container(
       width: double.infinity,
@@ -109,11 +118,25 @@ class _UserRatingsWidgetState extends State<UserRatingsWidget> {
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: List.generate(5, (index) {
-                        return Icon(
-                          index < averageRating.floor() ? Icons.star : Icons.star_border,
-                          color: AppTheme.warningColor,
-                          size: 16,
-                        );
+                        if (index < fullStars) {
+                          return Icon(
+                            Icons.star,
+                            color: AppTheme.warningColor,
+                            size: 16,
+                          );
+                        } else if (index == fullStars && hasHalfStar) {
+                            return Icon(
+                              Icons.star_half,
+                              color: AppTheme.warningColor,
+                              size: 16,
+                            );
+                        } else {
+                          return Icon(
+                            Icons.star_border,
+                            color: AppTheme.warningColor,
+                            size: 16,
+                          );
+                        }
                       }),
                     ),
                     SizedBox(height: 0.5.h),
@@ -129,8 +152,8 @@ class _UserRatingsWidgetState extends State<UserRatingsWidget> {
                 Expanded(
                   child: Column(
                     children: ratingBreakdown.map((rating) {
-                      final int stars = rating['stars'] ?? 5;
-                      final double percentage = (rating['percentage'] as num?)?.toDouble() ?? 0.0;
+                      final int stars = rating.stars;
+                      final double percentage = rating.percentage;
 
                       return Padding(
                         padding: EdgeInsets.symmetric(vertical: 0.5.h),
