@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movies__series_app/core/enums/media_type.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../core/app_export.dart';
@@ -89,7 +90,7 @@ class HeroSectionWidget extends StatelessWidget {
                           ),
                           SizedBox(width: 1.w),
                           Text(
-                            '${contentData.rating.toStringAsFixed(1)}/10',
+                            '${contentData.rating.toStringAsFixed(1)}/5.0',
                             style: AppTheme.darkTheme.textTheme.bodyMedium?.copyWith(
                               color: AppTheme.contentWhite,
                               fontWeight: FontWeight.w600,
@@ -97,6 +98,26 @@ class HeroSectionWidget extends StatelessWidget {
                           ),
                         ],
                       ),
+
+                      if (contentData.type == MediaType.series && contentData.seasons != null) ...[
+                        SizedBox(width: 3.w),
+                        Container(
+                          padding:  EdgeInsets.symmetric(
+                              horizontal: 2.w, vertical: 0.5.h),
+                          decoration: BoxDecoration(
+                            color: AppTheme.secondaryDark.withValues(alpha: 0.8),
+                            borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                '${contentData.seasons} Temp • ${contentData.episodes} Ep',
+                                style: AppTheme.darkTheme.textTheme.bodySmall?.copyWith(
+                                  color: AppTheme.contentWhite,
+                                  fontWeight: FontWeight.w500,
+                                  ),
+                              ),
+                          ),
+                      ],
+
                       const Spacer(),
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.5.h),

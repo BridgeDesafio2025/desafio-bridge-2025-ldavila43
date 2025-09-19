@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:movies__series_app/core/enums/media_type.dart';
 import 'package:sizer/sizer.dart';
 
 import '../../../../core/app_export.dart';
@@ -76,6 +77,29 @@ class ContentCardWidget extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
+
+          if (content.type == MediaType.series && content.seasons != null) 
+            Padding(
+              padding: EdgeInsets.only(top: 0.5.h),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.tv_rounded,
+                    size: 16,
+                    color: AppTheme.mutedText,
+                    ),
+                    SizedBox(width: 6),
+                    Text(
+                      '${content.seasons} Temporadas • ${content.episodes} Episodios',
+                      style:TextStyle(
+                        color: AppTheme.mutedText,
+                        fontSize:12
+                      )
+                    ),
+                ],
+              ),
+            ),
+
           SizedBox(height: 1.h),
           _buildGenreTags(),
           SizedBox(height: 1.h),
