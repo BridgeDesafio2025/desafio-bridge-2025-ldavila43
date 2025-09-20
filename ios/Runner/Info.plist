@@ -48,5 +48,12 @@
         <key>NSAllowsArbitraryLoads</key>
         <true />
     </dict>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>https</string>
+		<string>http</string>
+        <string>netflix</string>
+	</array>
+
 </dict>
 </plist>

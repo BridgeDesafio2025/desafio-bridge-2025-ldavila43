@@ -1,10 +1,15 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:movies__series_app/core/model/streaming_platform.dart';
 import 'package:sizer/sizer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/app_export.dart';
 
 class StreamingPlatformsWidget extends StatelessWidget {
-  final List<Map<String, dynamic>> platforms;
+  final List<StreamingPlatform> platforms;
 
   const StreamingPlatformsWidget({
     super.key,
@@ -13,13 +18,15 @@ class StreamingPlatformsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (platforms.isEmpty) {
+      return const SizedBox.shrink();
+    }
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 2.h),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          
           Text(
             'Disponível em',
             style: AppTheme.darkTheme.textTheme.titleLarge?.copyWith(
@@ -27,10 +34,7 @@ class StreamingPlatformsWidget extends StatelessWidget {
               fontWeight: FontWeight.w600,
             ),
           ),
-
           SizedBox(height: 2.h),
-
-          
           Wrap(
             spacing: 3.w,
             runSpacing: 2.h,
@@ -49,34 +53,26 @@ class StreamingPlatformsWidget extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      
                       Container(
                         width: 10.w,
                         height: 5.h,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: CustomImageWidget(
-                            imageUrl: platform['logoUrl'] ??
-                                'https://images.unsplash.com/photo-1611162617474-5b21e879e113?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3',
+                          child: Image.asset(
+                            platform.logoAsset,
                             width: 10.w,
                             height: 5.h,
                             fit: BoxFit.cover,
                           ),
                         ),
                       ),
-
                       SizedBox(width: 3.w),
-
-                      
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              platform['name'] ?? 'Plataforma',
+                              platform.name,
                               style: AppTheme.darkTheme.textTheme.bodyMedium?.copyWith(
                                 color: AppTheme.contentWhite,
                                 fontWeight: FontWeight.w600,
@@ -86,7 +82,7 @@ class StreamingPlatformsWidget extends StatelessWidget {
                             ),
                             SizedBox(height: 0.5.h),
                             Text(
-                              platform['type'] ?? 'Streaming',
+                              platform.type,
                               style: AppTheme.darkTheme.textTheme.bodySmall?.copyWith(
                                 color: AppTheme.mutedText,
                               ),
@@ -94,8 +90,6 @@ class StreamingPlatformsWidget extends StatelessWidget {
                           ],
                         ),
                       ),
-
-                      
                       Icon(
                         Icons.open_in_new,
                         color: AppTheme.accentColor,
@@ -112,17 +106,34 @@ class StreamingPlatformsWidget extends StatelessWidget {
     );
   }
 
-  void _openPlatformApp(BuildContext context, Map<String, dynamic> platform) {
-    
+  void _showSnackBar(BuildContext context, String message, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Abrindo ${platform['name'] ?? 'plataforma'}...'),
-        backgroundColor: AppTheme.accentColor,
+        content: Text(message),
+        backgroundColor: isError ? Colors.redAccent : AppTheme.accentColor,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
       ),
     );
+  }
+
+  void _openPlatformApp(BuildContext context, StreamingPlatform platform) async {
+    _showSnackBar(context, 'Abrindo ${platform.name}...');
+    
+    if (platform.deepLink != null && platform.deepLink!.isNotEmpty) {
+      final Uri url = Uri.parse(platform.deepLink!);
+
+      try {
+        if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+          _showSnackBar(context, 'Não foi possível abrir o link.', isError: true);
+        }
+      } on PlatformException {
+        _showSnackBar(context, 'Não foi possível encontrar o aplicativo.', isError: true);
+      }
+    } else {
+      _showSnackBar(context, 'Nenhum link disponível para esta plataforma.', isError: true);
+    }
   }
 }

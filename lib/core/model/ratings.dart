@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 class Ratings {
   final double averageRating;
   final int totalReviews;

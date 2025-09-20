@@ -1,9 +1,5 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:movies__series_app/core/model/ratings.dart';
-
 import 'endpoints.dart';
 import '../model/actor.dart';
 import '../model/filter_data.dart';
@@ -21,7 +17,7 @@ Future<Page<Medium>> getMediaPage({
       if (filterData != null) ...filterData.toQueryParams(),
     },
   );
-  
+
   if (response.statusCode == 200) {
     final jsonResponse = (response.data as Map<String, dynamic>);
     return Page<Medium>.fromJson(
