@@ -11,6 +11,14 @@ class StreamingPlatform {
     this.deepLink
   });
 
+  Map<String, dynamic> toJson() {
+  return {
+    'name': name,
+    'type': type,
+    'deepLink': deepLink,
+    };
+  }
+
   factory StreamingPlatform.fromJson(Map<String, dynamic> json) {
     final String nameValue = json['name'] ?? 'Nome Indisponível';
     final String typeValue = json['type'] ?? 'Streaming';
@@ -23,7 +31,9 @@ class StreamingPlatform {
       logoAsset: logoAssetValue,
       deepLink: deepLinkValue,
       );
+
   }
+  
   static String _getLogoAssetPath(String platformName) {
     final sanitizedName = platformName.toLowerCase().replaceAll(' ', '_');
     return 'assets/images/${sanitizedName}_logo.png';

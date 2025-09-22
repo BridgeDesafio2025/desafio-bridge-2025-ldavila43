@@ -1,5 +1,4 @@
 import 'package:movies__series_app/core/model/streaming_platform.dart';
-
 import '../enums/media_type.dart';
 
 class Medium {
@@ -58,5 +57,22 @@ class Medium {
       seasons: json['seasons'],
       streamingPlatforms: platformItems,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'type': type.name,
+      'title': title,
+      'genre': genres,
+      'synopsis': synopsis,
+      'rating': rating,
+      'poster': poster,
+      'year': year,
+      'duration': duration,
+      'episodes': episodes,
+      'seasons': seasons,
+      'streamingPlatforms': streamingPlatforms.map((platform) => platform.toJson()).toList(),
+    };
   }
 }

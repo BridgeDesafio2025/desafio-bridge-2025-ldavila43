@@ -25,7 +25,7 @@ class ContentDetailScreen extends StatefulWidget {
   State<ContentDetailScreen> createState() => _ContentDetailScreenState();
 }
 
-// A classe de estado é declarada separadamente aqui
+
 class _ContentDetailScreenState extends State<ContentDetailScreen> {
   final FavoriteService _favoriteService = FavoriteService();
   bool _isFavorite = false;
@@ -47,7 +47,7 @@ class _ContentDetailScreenState extends State<ContentDetailScreen> {
     if(_isFavorite) {
       await _favoriteService.removeFavorite(widget.medium.id);
     } else {
-      await _favoriteService.addFavorite(widget.medium.id);
+      await _favoriteService.addFavorite(widget.medium);
     }
     setState(() {
       _isFavorite = !_isFavorite;
