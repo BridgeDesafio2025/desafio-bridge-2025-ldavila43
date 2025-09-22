@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:movies__series_app/core/services/favorite_service.dart';
 import 'package:sizer/sizer.dart';
-
 import '../../core/model/medium.dart';
 import '../../core/app_export.dart';
 import './widgets/action_buttons_widget.dart';

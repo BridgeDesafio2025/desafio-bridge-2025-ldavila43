@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:movies__series_app/core/model/streaming_platform.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -37,6 +36,34 @@ class StreamingPlatformsWidget extends StatelessWidget {
             spacing: 3.w,
             runSpacing: 2.h,
             children: platforms.map((platform) {
+              Widget imageToShow;
+
+              final bool hasValidUrl = platform.logoUrl != null &&
+                  platform.logoUrl!.isNotEmpty &&
+                  !platform.logoUrl!.contains('placeholder.com');
+
+              if (hasValidUrl) {
+                imageToShow = Image.network(
+                  platform.logoUrl!,
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, progress) =>
+                      progress == null
+                          ? child
+                          : const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                  errorBuilder: (context, error, stackTrace) => Image.asset(
+                      platform.logoAsset,
+                      errorBuilder: (c, e, s) =>
+                          const Icon(Icons.image_not_supported, color: Colors.grey)),
+                );
+              } else {
+                imageToShow = Image.asset(
+                  platform.logoAsset,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const Icon(Icons.image_not_supported, color: Colors.grey),
+                );
+              }
+
               return GestureDetector(
                 onTap: () => _openPlatformApp(context, platform),
                 child: Container(
@@ -46,22 +73,17 @@ class StreamingPlatformsWidget extends StatelessWidget {
                     color: AppTheme.secondaryDark,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(
-                      color: AppTheme.borderColor.withValues(alpha: 0.3),
+                      color: AppTheme.borderColor.withOpacity(0.3),
                     ),
                   ),
                   child: Row(
                     children: [
-                      Container(
+                      SizedBox(
                         width: 10.w,
-                        height: 5.h,
+                        height: 10.w,
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: Image.asset(
-                            platform.logoAsset,
-                            width: 10.w,
-                            height: 5.h,
-                            fit: BoxFit.cover,
-                          ),
+                          child: imageToShow,
                         ),
                       ),
                       SizedBox(width: 3.w),
@@ -118,16 +140,13 @@ class StreamingPlatformsWidget extends StatelessWidget {
   }
 
   void _openPlatformApp(BuildContext context, StreamingPlatform platform) async {
-    _showSnackBar(context, 'Abrindo ${platform.name}...');
-    
     if (platform.deepLink != null && platform.deepLink!.isNotEmpty) {
       final Uri url = Uri.parse(platform.deepLink!);
-
       try {
         if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
           _showSnackBar(context, 'Não foi possível abrir o link.', isError: true);
         }
-      } on PlatformException {
+      } catch (_) {
         _showSnackBar(context, 'Não foi possível encontrar o aplicativo.', isError: true);
       }
     } else {
