@@ -46,3 +46,4 @@ flutter_app/
 └── README.md           # documentação
 
 ```
+Para uma análise mais detalhada, veja o [Relatório Completo em PDF](docs/relatorio.mobile).

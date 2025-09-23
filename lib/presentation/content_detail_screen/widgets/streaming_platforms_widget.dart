@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:movies__series_app/core/model/streaming_platform.dart';
 import 'package:sizer/sizer.dart';
 import 'package:url_launcher/url_launcher.dart';
-
 import '../../../core/app_export.dart';
 
 class StreamingPlatformsWidget extends StatelessWidget {
@@ -38,13 +37,12 @@ class StreamingPlatformsWidget extends StatelessWidget {
             children: platforms.map((platform) {
               Widget imageToShow;
 
-              final bool hasValidUrl = platform.logoUrl != null &&
-                  platform.logoUrl!.isNotEmpty &&
-                  !platform.logoUrl!.contains('placeholder.com');
+              final bool hasValidUrl = platform.logoUrl.isNotEmpty &&
+                  !platform.logoUrl.contains('placeholder.com');
 
               if (hasValidUrl) {
                 imageToShow = Image.network(
-                  platform.logoUrl!,
+                  platform.logoUrl,
                   fit: BoxFit.cover,
                   loadingBuilder: (context, child, progress) =>
                       progress == null
